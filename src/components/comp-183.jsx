@@ -26,7 +26,7 @@ export default function Component() {
   return (
     <div>
       <div
-        className="relative inline-grid h-9 grid-cols-[1fr_1fr] items-center text-sm font-medium">
+        className="relative inline-grid md:h-9 h-7 grid-cols-[1fr_1fr] items-center text-sm font-medium">
         <Switch
           id={id}
           checked={checked}

@@ -28,12 +28,16 @@ import {
 import Image from "next/image";
 
 const items = [
-  { title: "Home", icon: LayoutDashboard, url: "/" },
-  { title: "Tasks", icon: ListTodo, url: "#" },
-  { title: "Finance", icon: Wallet, url: "#" },
-  { title: "Analytics", icon: ChartNoAxesColumnIncreasing, url: "#" },
-  { title: "Calendar", icon: Calendar, url: "#" },
-  { title: "Habits", icon: PersonStanding, url: "#" },
+  { title: "Home", icon: LayoutDashboard, url: "/dashboard" },
+  { title: "Tasks", icon: ListTodo, url: "/dashboard/tasks" },
+  { title: "Finance", icon: Wallet, url: "/dashboard/finance" },
+  {
+    title: "Analytics",
+    icon: ChartNoAxesColumnIncreasing,
+    url: "/dashboard/analytics",
+  },
+  { title: "Calendar", icon: Calendar, url: "/dashboard/calendar" },
+  { title: "Habits", icon: PersonStanding, url: "/dashboard/habits" },
 ];
 const AppSideBar = () => {
   return (

@@ -10,11 +10,11 @@ const Navbar = () => {
       <div className='flex items-center'>
         <SidebarTrigger />
 
-        <h2 className='ml-4 text-xl font-semibold'>User</h2>
+        <h2 className='ml:4 md:block hidden text-base font-semibold'>User</h2>
       </div>
 
-      <div className='flex justify-between basis-1/4 items-center'>
-        <h2 className='text-base font-medium'>
+      <div className='flex justify-between basis-4/5 md:basis-1/4 items-center'>
+        <h2 className='md:text-base text-sm font-medium'>
           {new Date().toLocaleDateString("en-GB", {
             weekday: "long",
             year: "numeric",
