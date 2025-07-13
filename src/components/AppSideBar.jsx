@@ -54,7 +54,7 @@ const AppSideBar = () => {
                   width={40}
                   height={40}
                 />
-                <span>Clrty</span>
+                <span className="text-xl font-medium font-chillax">Clrty</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

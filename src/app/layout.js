@@ -14,6 +14,10 @@ export default function RootLayout({ children }) {
           href='https://api.fontshare.com/v2/css?f[]=manrope@400,500,600&display=swap'
           rel='stylesheet'
         ></link>
+        <link
+          href='https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&display=swap'
+          rel='stylesheet'
+        ></link>
       </head>
       <body className={`font-manrope antialiased bg-sidebar`}>
         <ThemeProvider
