@@ -15,8 +15,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+} from "../../../components/ui/card";
+import {  ChartContainer } from "../../../components/ui/chart";
 export const description = "Weekly Task Completion";
 
 const totalTasks = 17;
@@ -40,7 +40,7 @@ const chartConfig = {
 
 const Tasks = () => {
   return (
-    <Card className='flex flex-col'>
+    <Card className='flex flex-col h-full'>
       <CardHeader className='items-center pb-0'>
         <CardTitle className={"text-center"}>Task Completion</CardTitle>
         <CardDescription className={"text-center"}>This Week</CardDescription>
@@ -104,7 +104,7 @@ const Tasks = () => {
           <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Tracking your task progress this week
+          Tracking team progress this week
         </div>
       </CardFooter>
     </Card>

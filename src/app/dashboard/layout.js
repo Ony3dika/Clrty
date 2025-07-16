@@ -1,8 +1,8 @@
 
 import { cookies } from "next/headers";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSideBar from "@/components/AppSideBar";
-import Navbar from "@/components/Navbar";
+import { SidebarProvider } from "../../components/ui/sidebar";
+import AppSideBar from "../../components/AppSideBar";
+import Navbar from "../../components/Navbar";
 
 import React from 'react'
 

@@ -23,6 +23,7 @@ import {
   PersonStanding,
   LogOut,
   ChartNoAxesColumnIncreasing,
+  Users2Icon,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -30,14 +31,16 @@ import Image from "next/image";
 const items = [
   { title: "Home", icon: LayoutDashboard, url: "/dashboard" },
   { title: "Tasks", icon: ListTodo, url: "/dashboard/tasks" },
+  { title: "Team", icon: Users2Icon, url: "/dashboard/team" },
   { title: "Finance", icon: Wallet, url: "/dashboard/finance" },
+
+  { title: "Calendar", icon: Calendar, url: "/dashboard/calendar" },
+
   {
     title: "Analytics",
     icon: ChartNoAxesColumnIncreasing,
     url: "/dashboard/analytics",
   },
-  { title: "Calendar", icon: Calendar, url: "/dashboard/calendar" },
-  { title: "Habits", icon: PersonStanding, url: "/dashboard/habits" },
 ];
 const AppSideBar = () => {
   return (

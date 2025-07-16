@@ -1,9 +1,9 @@
 import React from 'react'
 
-const HabitsPage = () => {
+const TeamPage = () => {
   return (
     <div>HabitsPage</div>
   )
 }
 
-export default HabitsPage
+export default TeamPage
