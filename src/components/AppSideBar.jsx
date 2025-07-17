@@ -18,12 +18,11 @@ import {
   LayoutDashboard,
   ListTodo,
   Wallet,
-  Calendar,
   Settings,
-  PersonStanding,
   LogOut,
   ChartNoAxesColumnIncreasing,
   Users2Icon,
+  CalendarDays,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -34,7 +33,7 @@ const items = [
   { title: "Team", icon: Users2Icon, url: "/dashboard/team" },
   { title: "Finance", icon: Wallet, url: "/dashboard/finance" },
 
-  { title: "Calendar", icon: Calendar, url: "/dashboard/calendar" },
+  { title: "Calendar", icon: CalendarDays, url: "/dashboard/calendar" },
 
   {
     title: "Analytics",
@@ -57,7 +56,7 @@ const AppSideBar = () => {
                   width={40}
                   height={40}
                 />
-                <span className="text-xl font-medium font-chillax">Clrty</span>
+                <span className='text-xl font-medium font-chillax'>Clrty</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

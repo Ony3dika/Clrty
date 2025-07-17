@@ -71,7 +71,7 @@ const Expenses = () => {
           {/* Budget */}
           <div className='flex basis-1/3 flex-col justify-start border rounded-xl px-3 py-2'>
             <p className='text-sm text-muted-foreground'>Budget</p>
-            <h2 className='font-semibold md:text-3xl text-2xl ml-0 p-0'>
+            <h2 className='font-semibold md:text-3xl text-2xl ml-0 p-0 font-sans'>
               $ {budget.toLocaleString("en-US")}
             </h2>
           </div>
@@ -81,7 +81,7 @@ const Expenses = () => {
             <p className='text-sm text-muted-foreground'>Spent</p>
             <div className='flex items-center'>
               {" "}
-              <h2 className='font-semibold md:text-3xl text-2xl'>
+              <h2 className='font-semibold md:text-3xl text-2xl font-sans'>
                 ${totalExpense.toLocaleString("en-US")}
               </h2>
               <div

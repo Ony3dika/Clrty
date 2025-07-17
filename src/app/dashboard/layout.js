@@ -1,14 +1,11 @@
-
 import { cookies } from "next/headers";
 import { SidebarProvider } from "../../components/ui/sidebar";
 import AppSideBar from "../../components/AppSideBar";
 import Navbar from "../../components/Navbar";
 
-import React from 'react'
-
-const Dashboardlayout = async ({children}) => {
-    const cookieStore = await cookies();
-    const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+const Dashboardlayout = async ({ children }) => {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   return (
     <>
       <SidebarProvider defaultOpen={defaultOpen}>
@@ -20,6 +17,6 @@ const Dashboardlayout = async ({children}) => {
       </SidebarProvider>
     </>
   );
-}
+};
 
-export default Dashboardlayout
+export default Dashboardlayout;

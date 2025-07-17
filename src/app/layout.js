@@ -1,10 +1,15 @@
 import "./globals.css";
+import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "../components/ui/theme-provider";
 
 export const metadata = {
   title: "Clrty",
-  description: "No need to Imagine, Just Act",
+  description: "Workflows that work.",
 };
+const fontSans = Geist({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
 
 export default function RootLayout({ children }) {
   return (
@@ -19,7 +24,9 @@ export default function RootLayout({ children }) {
           rel='stylesheet'
         ></link>
       </head>
-      <body className={`font-manrope antialiased bg-sidebar`}>
+      <body
+        className={`font-manrope ${fontSans.variable} antialiased bg-sidebar`}
+      >
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

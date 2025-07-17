@@ -3,7 +3,7 @@ import { SidebarTrigger } from "./ui/sidebar";
 import logo from "../../public/aski.png";
 import Image from "next/image";
 import ThemeToggle from "./comp-183";
-import { Avatar,AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 const Navbar = () => {
   return (
     <nav className='p-4 flex items-center justify-between'>

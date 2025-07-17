@@ -42,7 +42,7 @@ const Tasks = () => {
   return (
     <Card className='flex flex-col h-full'>
       <CardHeader className='items-center pb-0'>
-        <CardTitle className={"text-center"}>Task Completion</CardTitle>
+        <CardTitle className={"text-center"}>Project Progress</CardTitle>
         <CardDescription className={"text-center"}>This Week</CardDescription>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
