@@ -1,14 +1,36 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../../../components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
+  CardFooter,
   CardTitle,
 } from "../../../components/ui/card";
-import { Progress } from "../../../components/ui/progress";
-import { CalendarCheck, Plus, CalendarCheckIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+import {
+  CalendarCheck,
+  Plus,
+  CalendarCheckIcon,
+  CircleCheckBig,
+  Timer,
+  BriefcaseBusiness,
+  CalendarClock,
+  User2Icon,
+  Ellipsis,
+  StickyNote,
+  File,
+} from "lucide-react";
 
 import { motion } from "framer-motion";
 import {
@@ -31,59 +53,102 @@ import { Label } from "../../../components/ui/label";
 import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
+import { ScrollArea } from "../../../components/ui/scroll-area";
+import { cn } from "../../../lib/utils";
 const TaskPage = () => {
-  // {
-  //     id: 1,
-  //     title: "Design homepage mockup",
-  //     status: "completed",
-  //     assignee: "Chidi",
-  //     priority: "high",
-  //     due: "Jul 18",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Set up project repo",
-  //     status: "in-progress",
-  //     assignee: "Ada",
-  //     priority: "medium",
-  //     due: "Jul 20",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Write content plan",
-  //     status: "pending",
-  //     assignee: "Uche",
-  //     priority: "low",
-  //     due: "Jul 22",
-  //   },
   const [open, setOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const uncompletedTasks = tasks.filter(
+    (task) => task.status === "in-progress"
+  );
+  const completedTasks = tasks.filter((task) => task.status === "completed");
   const [formData, setFormData] = useState({
+    id: "",
     title: "",
     description: "",
     assignee: "",
-    dueDate: null,
+    dueDate: new Date(),
     priority: "high",
   });
   const [date, setDate] = useState("");
+
+  // Fetch Tasks
+  useEffect(() => {
+    const storedTasks = localStorage.getItem("tasks");
+    if (storedTasks) {
+      try {
+        const parsedTasks = JSON.parse(storedTasks);
+        setTasks(parsedTasks);
+        console.log(parsedTasks);
+      } catch (error) {
+        console.error("Failed to parse tasks:", error);
+      }
+    }
+  }, []);
+
+  // Save Tasks
   const handleSubmit = (e) => {
     e.preventDefault();
     const newTask = {
       ...formData,
-      id: Date.now(),
+      id: crypto.randomUUID(),
     };
-    setTasks((prev) => [...prev, newTask]);
+    setTasks((prevTasks) => {
+      const updatedTasks = [...prevTasks, newTask];
 
+      // Save to localStorage
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+      return updatedTasks;
+    });
     // Optional: Reset form
     setFormData({
+      id: "",
       title: "",
       description: "",
       assignee: "",
       dueDate: null,
       priority: "high",
     });
-    setDate(null); // if you're using separate state for date
-    console.log(formData);
+    setDate(null);
+  };
+
+  //Update Task
+  const updateTaskStatus = (id, newStatus) => {
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id === id) {
+          const updatedTask = { ...task };
+
+          if (newStatus === "not-started") {
+            delete updatedTask.status;
+          } else {
+            updatedTask.status = newStatus;
+          }
+
+          return updatedTask;
+        }
+        return task;
+      })
+    );
+
+    // Also update localStorage
+    const updatedTasks = tasks.map((task) => {
+      if (task.id === id) {
+        const updatedTask = { ...task };
+
+        if (newStatus === "not-started") {
+          delete updatedTask.status;
+        } else {
+          updatedTask.status = newStatus;
+        }
+
+        return updatedTask;
+      }
+      return task;
+    });
+
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   };
 
   return (
@@ -93,7 +158,7 @@ const TaskPage = () => {
       exit={{ opacity: 1 }}
       transition={{ duration: 1.5 }}
     >
-      <main>
+      <main className='h-full flex flex-col overflow-hidden '>
         <div className='flex items-center '>
           {" "}
           <CalendarCheck className='bg-primary rounded-full p-0.5' />
@@ -102,20 +167,18 @@ const TaskPage = () => {
 
         {/* Add Task Dialog */}
         <Dialog>
-          <form onSubmit={()=>{handleSubmit(e)}}>
-            <DialogTrigger asChild>
-              <Button className={"my-5"} variant='outline'>
-                {" "}
-                <Plus /> Add Tasks
-              </Button>
-            </DialogTrigger>
-            <DialogContent className='sm:max-w-[425px]'>
-              <DialogHeader>
-                <DialogTitle>Add Task</DialogTitle>
-                <DialogDescription>
-                  Add a new task to the list
-                </DialogDescription>
-              </DialogHeader>
+          <DialogTrigger asChild>
+            <Button className={"my-5 w-fit"} variant='outline'>
+              {" "}
+              <Plus /> Add Tasks
+            </Button>
+          </DialogTrigger>
+          <DialogContent className='sm:max-w-[425px]'>
+            <DialogHeader>
+              <DialogTitle>Add Task</DialogTitle>
+              <DialogDescription>Add a new task to the list</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit}>
               <div className='grid gap-4'>
                 {/* Task Title */}
                 <div className='grid gap-3'>
@@ -227,22 +290,311 @@ const TaskPage = () => {
                   </div>
                 </RadioGroup>
               </div>
-              <DialogFooter>
+              <DialogFooter className={"mt-5"}>
                 <DialogClose asChild>
                   <Button variant='outline'>Cancel</Button>
                 </DialogClose>
                 <Button type='submit'>Add</Button>
               </DialogFooter>
-            </DialogContent>
-          </form>
+            </form>
+          </DialogContent>
         </Dialog>
 
         {/* Tasks */}
-        <section className='grid md:grid-cols-3 grid-cols-1 gap-4 h-96'>
-          <div className='bg-secondary rounded'></div>
+        <section className='grid flex-1 md:grid-cols-3 grid-cols-1 gap-4 overflow-auto'>
+          {/* Working */}
+          <div className='bg-secondary rounded-md flex flex-col'>
+            {" "}
+            <div className='flex justify-between items-center p-2 rounded-t-md bg-input'>
+              {" "}
+              <div className='flex items-center'>
+                <BriefcaseBusiness className='text-blue-500 size-5' />
+                <p className='text-sm ml-2'>Working</p>
+              </div>
+              <button className='cursor-pointer'>
+                <File size={20} />
+              </button>
+            </div>
+            <ScrollArea className='h-[60vh] p-2 flex flex-col'>
+              {tasks
+                .filter((task) => !task.status)
+                .map((task) => (
+                  <Card
+                    key={task.id}
+                    className={"p-3 shadow-none rounded-xl gap-3 my-2"}
+                  >
+                    <CardHeader className={"p-0"}>
+                      <CardTitle
+                        className={
+                          "text-sm flex items-center font-normal justify-between"
+                        }
+                      >
+                        {task.title}
 
-          <div className='bg-secondary rounded'></div>
-          <div className='bg-secondary rounded'></div>
+                        {/* DropDown to Move to Progress Column */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant='ghost'>
+                              <Ellipsis />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className='w-40'>
+                            <DropdownMenuLabel>Status</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuRadioGroup
+                              value={task.status}
+                              onValueChange={(value) =>
+                                updateTaskStatus(task.id, value)
+                              }
+                            >
+                              <DropdownMenuRadioItem
+                                value='in-progress'
+                                className={"px"}
+                              >
+                                In Progress
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value='completed'>
+                                Completed
+                              </DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </CardTitle>
+                      <CardDescription className={"flex items-center mt-2"}>
+                        <User2Icon size={20} className='mr-1' />
+
+                        <p>{task.assignee}</p>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className={"p-0"}>
+                      <CardDescription>{task.description}</CardDescription>
+                    </CardContent>
+                    <CardFooter
+                      className={
+                        "p-0 mt-2 flex justify-between items-center text-sm"
+                      }
+                    >
+                      <div className='flex items-center text-muted-foreground'>
+                        <CalendarClock size={20} className='mr-1' />{" "}
+                        {task.dueDate
+                          ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : "No due date"}
+                      </div>
+                      <div
+                        className={cn("text-sm border px-2 py-0.5 rounded", {
+                          "bg-red-500/60 border-red-500":
+                            task.priority === "high",
+                          "bg-yellow-500/60 border-yellow-500":
+                            task.priority === "medium",
+                          "bg-green-500/60 border-green-500":
+                            task.priority === "low",
+                        })}
+                      >
+                        {task.priority}
+                      </div>
+                    </CardFooter>
+                  </Card>
+                ))}
+            </ScrollArea>
+          </div>
+
+          {/* In Progress */}
+          <div className='bg-secondary rounded-md'>
+            <div className='flex justify-between items-center p-2 rounded-t-md bg-input '>
+              {" "}
+              <div className='flex items-center'>
+                <Timer className='text-yellow-500 size-5' />
+                <p className='text-sm ml-2'>In Progress</p>
+              </div>
+              <button className='cursor-pointer'>
+                <File size={20} />
+              </button>
+            </div>
+
+            <ScrollArea className='h-[60vh] p-2 flex flex-col'>
+              {uncompletedTasks.map((task) => (
+                <Card
+                  key={task.id}
+                  className={"p-3 shadow-none rounded-xl gap-3 my-2"}
+                >
+                  <CardHeader className={"p-0"}>
+                    <CardTitle
+                      className={
+                        "text-sm flex items-center font-normal justify-between"
+                      }
+                    >
+                      {task.title}
+                      {/* DropDown to Move to Progress Column */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant='ghost'>
+                            <Ellipsis />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='w-40'>
+                          <DropdownMenuLabel>Status</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuRadioGroup
+                            value={task.status}
+                            onValueChange={(value) =>
+                              updateTaskStatus(task.id, value)
+                            }
+                          >
+                            <DropdownMenuRadioItem
+                              value='not-started'
+                              className={"px"}
+                            >
+                              Not Started
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value='completed'>
+                              Completed
+                            </DropdownMenuRadioItem>
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </CardTitle>
+                    <CardDescription className={"flex items-center mt-2"}>
+                      <User2Icon size={20} className='mr-1' />
+
+                      <p>{task.assignee}</p>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className={"p-0"}>
+                    <CardDescription>{task.description}</CardDescription>
+                  </CardContent>
+                  <CardFooter
+                    className={
+                      "p-0 mt-2 flex justify-between items-center text-sm"
+                    }
+                  >
+                    <div className='flex items-center text-muted-foreground'>
+                      <CalendarClock size={20} className='mr-1' />{" "}
+                      {task.dueDate
+                        ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : "No due date"}
+                    </div>
+                    <div
+                      className={cn("text-sm border px-2 py-0.5 rounded", {
+                        "bg-red-500/60 border-red-500":
+                          task.priority === "high",
+                        "bg-yellow-500/60 border-yellow-500":
+                          task.priority === "medium",
+                        "bg-green-500/60 border-green-500":
+                          task.priority === "low",
+                      })}
+                    >
+                      {task.priority}
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </ScrollArea>
+          </div>
+
+          {/* Completed */}
+          <div className='bg-secondary rounded-md'>
+            <div className='flex justify-between items-center p-2 rounded-t-md bg-input '>
+              {" "}
+              <div className='flex items-center'>
+                <CircleCheckBig className='text-green-500 size-5' />
+                <p className='text-sm ml-2'>Completed</p>
+              </div>
+              <button className='cursor-pointer'>
+                <File size={20} />
+              </button>
+            </div>
+
+            <ScrollArea className='h-[60vh] p-2 flex flex-col'>
+              {completedTasks.map((task) => (
+                <Card
+                  key={task.id}
+                  className={"p-3 shadow-none rounded-xl gap-3 my-2"}
+                >
+                  <CardHeader className={"p-0"}>
+                    <CardTitle
+                      className={
+                        "text-sm flex items-center font-normal justify-between"
+                      }
+                    >
+                      {task.title}
+                      {/* DropDown to Move to Progress Column */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant='ghost'>
+                            <Ellipsis />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='w-40'>
+                          <DropdownMenuLabel>Status</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuRadioGroup
+                            value={task.status}
+                            onValueChange={(value) =>
+                              updateTaskStatus(task.id, value)
+                            }
+                          >
+                            <DropdownMenuRadioItem
+                              value='not-started'
+                              className={"px"}
+                            >
+                              Not Started
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem
+                              value='in-progress'
+                              className={"px"}
+                            >
+                              In Progress
+                            </DropdownMenuRadioItem>
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </CardTitle>
+                    <CardDescription className={"flex items-center mt-2"}>
+                      <User2Icon size={20} className='mr-1' />
+
+                      <p>{task.assignee}</p>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className={"p-0"}>
+                    <CardDescription>{task.description}</CardDescription>
+                  </CardContent>
+                  <CardFooter
+                    className={
+                      "p-0 mt-2 flex justify-between items-center text-sm"
+                    }
+                  >
+                    <div className='flex items-center text-muted-foreground'>
+                      <CalendarClock size={20} className='mr-1' />{" "}
+                      {task.dueDate
+                        ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : "No due date"}
+                    </div>
+                    <div
+                      className={cn("text-sm border px-2 py-0.5 rounded", {
+                        "bg-red-500/60 border-red-500":
+                          task.priority === "high",
+                        "bg-yellow-500/60 border-yellow-500":
+                          task.priority === "medium",
+                        "bg-green-500/60 border-green-500":
+                          task.priority === "low",
+                      })}
+                    >
+                      {task.priority}
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </ScrollArea>
+          </div>
         </section>
       </main>
     </motion.div>

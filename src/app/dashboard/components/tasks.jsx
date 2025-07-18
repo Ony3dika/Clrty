@@ -16,14 +16,16 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
-import {  ChartContainer } from "../../../components/ui/chart";
+import { ChartContainer } from "../../../components/ui/chart";
+import { set } from "date-fns";
 export const description = "Weekly Task Completion";
 
-const totalTasks = 17;
-const completedTasks = 10;
+const totalTasks = JSON.parse(localStorage.getItem("tasks")).length;
+const completedTasks = JSON.parse(localStorage.getItem("tasks")).filter(
+  (task) => task.status === "completed"
+).length;
 const completionRate = (completedTasks / totalTasks) * 100;
 const endAngle = (completionRate / 100) * 360;
-
 const chartData = [
   {
     name: "Task Completion",
@@ -37,7 +39,6 @@ const chartConfig = {
     label: "Tasks",
   },
 };
-
 const Tasks = () => {
   return (
     <Card className='flex flex-col h-full'>
