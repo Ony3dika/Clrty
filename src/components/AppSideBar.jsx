@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
 } from "./ui/sidebar";
 import Link from "next/link";
-import logo from "../../public/aski.png";
+import logo from "../../public/clrty.png";
 import {
   LayoutDashboard,
   ListTodo,
@@ -30,11 +30,9 @@ import Image from "next/image";
 const items = [
   { title: "Home", icon: LayoutDashboard, url: "/dashboard" },
   { title: "Tasks", icon: ListTodo, url: "/dashboard/tasks" },
+  { title: "Calendar", icon: CalendarDays, url: "/dashboard/calendar" },
   { title: "Team", icon: Users2Icon, url: "/dashboard/team" },
   { title: "Finance", icon: Wallet, url: "/dashboard/finance" },
-
-  { title: "Calendar", icon: CalendarDays, url: "/dashboard/calendar" },
-
   {
     title: "Analytics",
     icon: ChartNoAxesColumnIncreasing,
@@ -96,7 +94,7 @@ const AppSideBar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href={"/"}>
+              <Link href={"/dashboard/settings"}>
                 <Settings />
                 <span>Settings</span>
               </Link>
@@ -104,9 +102,13 @@ const AppSideBar = () => {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <button className='text-destructive '>
-                {" "}
+            <SidebarMenuButton
+              className={
+                "hover:bg-red-500/30 hover:border-red-500 border border-transparent hover:border hover:text-red-500 cursor-pointer"
+              }
+              asChild
+            >
+              <button className='text-destructive'>
                 <LogOut />
                 <span>LogOut</span>
               </button>

@@ -28,10 +28,10 @@ import {
   CalendarClock,
   User2Icon,
   Ellipsis,
-  StickyNote,
   File,
+  XIcon,
 } from "lucide-react";
-
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -55,6 +55,7 @@ import { Textarea } from "../../../components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 import { cn } from "../../../lib/utils";
+
 const TaskPage = () => {
   const [open, setOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
@@ -111,6 +112,13 @@ const TaskPage = () => {
       priority: "high",
     });
     setDate(null);
+    toast.success("Task created.", {
+      description: "Your task has been added.",
+      action: {
+        icon: "Close",
+        onClick: () => toast.dismiss(),
+      },
+    });
   };
 
   //Update Task
@@ -149,8 +157,14 @@ const TaskPage = () => {
     });
 
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    toast.info("Status changed.", {
+      description: "Task status has been changed",
+      action: {
+        icon: "Close",
+        onClick: () => toast.dismiss(),
+      },
+    });
   };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -158,10 +172,10 @@ const TaskPage = () => {
       exit={{ opacity: 1 }}
       transition={{ duration: 1.5 }}
     >
-      <main className='h-full flex flex-col overflow-hidden '>
+      <main className='h-full flex flex-col overflow-hidden'>
         <div className='flex items-center '>
           {" "}
-          <CalendarCheck className='bg-primary rounded-full p-0.5' />
+          <CalendarCheck className='border size-7 rounded-md p-2 bg-background dark:bg-input/30 dark:border-input' />
           <h1 className='font-semibold ml-2'>Tasks</h1>
         </div>
 
@@ -301,7 +315,7 @@ const TaskPage = () => {
         </Dialog>
 
         {/* Tasks */}
-        <section className='grid flex-1 md:grid-cols-3 grid-cols-1 gap-4 overflow-auto'>
+        <section className='grid flex-1 md:grid-cols-3 grid-cols-1 gap-4 overflow-auto md:mb-0 mb-5'>
           {/* Working */}
           <div className='bg-secondary rounded-md flex flex-col'>
             {" "}
@@ -315,7 +329,7 @@ const TaskPage = () => {
                 <File size={20} />
               </button>
             </div>
-            <ScrollArea className='h-[60vh] p-2 flex flex-col'>
+            <ScrollArea className='h-fit lg:h-[60vh] p-2 flex flex-col'>
               {tasks
                 .filter((task) => !task.status)
                 .map((task) => (
@@ -414,7 +428,7 @@ const TaskPage = () => {
               </button>
             </div>
 
-            <ScrollArea className='h-[60vh] p-2 flex flex-col'>
+            <ScrollArea className='h-fit lg:h-[60vh] p-2 flex flex-col'>
               {uncompletedTasks.map((task) => (
                 <Card
                   key={task.id}
@@ -510,7 +524,7 @@ const TaskPage = () => {
               </button>
             </div>
 
-            <ScrollArea className='h-[60vh] p-2 flex flex-col'>
+            <ScrollArea className='h-fit lg:h-[60vh] p-2 flex flex-col'>
               {completedTasks.map((task) => (
                 <Card
                   key={task.id}

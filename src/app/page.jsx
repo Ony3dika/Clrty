@@ -1,13 +1,99 @@
+"use client";
+import { useId, useState } from "react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Button } from "../components/ui/button";
 import Image from "next/image";
+import logo from "../../public/clrty.png";
+import google from "../../public/google.svg";
 import Link from "next/link";
-
+import { Input } from "../components/ui/input";
+import { Separator } from "../components/ui/separator";
 export default function Home() {
+  const id = useId();
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+
   return (
-    <main className='flex items-center justify-center h-screen'>
-     <Button asChild>
-      <Link href={"/dashboard"}>Dashboard</Link>
-     </Button>
+    <main className='lg:flex gap-x-4 justify-between items-center h-screen p-4'>
+      {/* Form Section */}
+      <section className='basis-[55%] h-full px-5 lg:pl-20 lg:pr-20 xl:pr-56 py-10 flex flex-col justify-evenly'>
+        <div className='flex items-center'>
+          {" "}
+          <Image
+            src={logo}
+            alt='Clrty'
+            className='rounded-full mr-2'
+            width={30}
+            height={30}
+          />
+          <h2 className='font-medium font-chillax'>Clrty</h2>
+        </div>
+
+        <div className=''>
+          <h1 className='font-semibold text-3xl'>
+            You again? <br />
+            <span className='text-lg text-primary'>We like you.</span>
+          </h1>
+
+          <p className='mt-2 text-muted-foreground'>
+            Time to get productive, or at least try :)
+          </p>
+        </div>
+
+        <Button variant={"outline"}>
+          <Image src={google} alt='google' />
+          Sign In with Google
+        </Button>
+
+        <Separator/>
+        {/* Form */}
+        <form action=''>
+          <Input required type='email' placeholder='Email' />
+
+          <div className='relative mt-3'>
+            <Input
+              id={id}
+              required
+              className='pe-9'
+              placeholder='Password'
+              type={isVisible ? "text" : "password"}
+            />
+            <button
+              className='text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+              type='button'
+              onClick={toggleVisibility}
+              aria-label={isVisible ? "Hide password" : "Show password"}
+              aria-pressed={isVisible}
+              aria-controls='password'
+            >
+              {isVisible ? (
+                <EyeOffIcon size={16} aria-hidden='true' />
+              ) : (
+                <EyeIcon size={16} aria-hidden='true' />
+              )}
+            </button>
+          </div>
+          <Button type='submit' className={"mt-10 w-fit"}>
+            Sign In
+          </Button>
+        </form>
+
+        <div className='flex text-sm'>
+          Don't have an account?{" "}
+          <Link className='text-primary ml-1' href={"/sign-up"}>
+            Sign Up
+          </Link>
+        </div>
+      </section>
+
+      {/* Image */}
+      <section className='basis-[45%] lg:block hidden h-full rounded-3xl bg-pattern'>
+        {" "}
+        <Button variant={"outline"} asChild className='m-4 rounded-full'>
+          <Link href={"/dashboard"}>D</Link>
+        </Button>
+      </section>
     </main>
   );
 }

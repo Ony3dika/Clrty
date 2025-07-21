@@ -186,3 +186,17 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.bg-pattern {
+  background: url(../../public/bg.png);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.bg-pattern2 {
+  background: url(../../public/bg3.png);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}

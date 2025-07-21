@@ -1,8 +1,7 @@
 import React from "react";
 import { SidebarTrigger } from "./ui/sidebar";
-import logo from "../../public/aski.png";
-import Image from "next/image";
-import ThemeToggle from "./comp-183";
+import logo from "../../public/clrty.png";
+import ThemeToggle from "./theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 const Navbar = () => {
   return (

@@ -10,7 +10,7 @@ const TeamPage = () => {
       exit={{ opacity: 1 }}
       transition={{ duration: 1.5 }}
     >
-      <div>HabitsPage</div>
+      <div>TeamPage</div>
     </motion.div>
   );
 };
