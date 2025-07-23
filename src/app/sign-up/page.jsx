@@ -1,19 +1,33 @@
 "use client";
 import React, { useMemo, useState, useId } from "react";
-import { CheckIcon, EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
+import {
+  CheckIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LoaderCircle,
+  XIcon,
+} from "lucide-react";
 import Image from "next/image";
 import logo from "../../../public/clrty.png";
 import google from "../../../public/google.svg";
 import { Separator } from "../../components/ui/separator";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
+import { toast } from "sonner";
+import Link from "next/link";
 
 const SignUp = () => {
   const id = useId();
-  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-
+  const [userData, setUserData] = useState({
+    first_name: "",
+    last_name: "",
+    password: "",
+    email: "",
+  });
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const checkStrength = (pass) => {
     const requirements = [
@@ -29,7 +43,7 @@ const SignUp = () => {
     }));
   };
 
-  const strength = checkStrength(password);
+  const strength = checkStrength(userData.password);
 
   const strengthScore = useMemo(() => {
     return strength.filter((req) => req.met).length;
@@ -50,12 +64,36 @@ const SignUp = () => {
     return "Strong password";
   };
 
+  // Register User
+
+  const registerUser = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${baseURL}/auth/sign-up`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+      const data = await response.json();
+      toast.success(data.message);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <main className='lg:flex gap-x-4 justify-between items-center h-screen p-4'>
       {" "}
       {/* Image */}
-      <section className='basis-[45%] lg:block hidden h-full rounded-3xl bg-pattern2 border'></section>
-      <section className='basis-[55%] h-full px-5 lg:pl-20 lg:pr-20 xl:pr-56 py-10 flex flex-col justify-evenly'>
+      <section className='basis-1/2 lg:block hidden h-full rounded-3xl bg-pattern2 border'></section>
+      <section className='basis-1/2 h-full px-5 lg:px-20 xl:px-40 2xl:px-52 py-10 flex flex-col justify-evenly'>
         <div className='flex items-center'>
           {" "}
           <Image
@@ -78,13 +116,34 @@ const SignUp = () => {
         <Separator />
 
         {/* Form */}
-        <form className='flex flex-col gap-3' action=''>
+        <form onSubmit={registerUser} className='flex flex-col gap-3' action=''>
           <div className='flex gap-3'>
             {" "}
-            <Input required type='text' placeholder='First Name' />
-            <Input required type='text' placeholder='Last Name' />
+            <Input
+              required
+              type='text'
+              onChange={(e) =>
+                setUserData({ ...userData, first_name: e.target.value })
+              }
+              placeholder='First Name'
+            />
+            <Input
+              required
+              onChange={(e) =>
+                setUserData({ ...userData, last_name: e.target.value })
+              }
+              type='text'
+              placeholder='Last Name'
+            />
           </div>
-          <Input required type='email' placeholder='Email' />
+          <Input
+            required
+            onChange={(e) =>
+              setUserData({ ...userData, email: e.target.value })
+            }
+            type='email'
+            placeholder='Email'
+          />
           <div>
             {/* Password input field with toggle visibility button */}
             <div className='*:not-first:mt-2'>
@@ -94,8 +153,10 @@ const SignUp = () => {
                   className='pe-9'
                   placeholder='Password'
                   type={isVisible ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={userData.password}
+                  onChange={(e) =>
+                    setUserData({ ...userData, password: e.target.value })
+                  }
                   aria-describedby={`${id}-description`}
                 />
                 <button
@@ -115,7 +176,7 @@ const SignUp = () => {
               </div>
             </div>
 
-            {password && (
+            {userData.password && (
               <>
                 {/* Password strength indicator */}
                 <div
@@ -176,8 +237,21 @@ const SignUp = () => {
               </>
             )}
           </div>
-          <Button className={"mt-5"}>Sign Up</Button>
+
+          {isLoading ? (
+            <Button disabled className={"mt-5"}>
+              <LoaderCircle className='animate-spin' />
+            </Button>
+          ) : (
+            <Button className={"mt-5"}>Sign Up</Button>
+          )}
         </form>
+        <div className='flex justify-center text-muted-foreground text-sm'>
+          Already have an account?{" "}
+          <Link className='text-primary ml-1' href={"/"}>
+            Sign In
+          </Link>
+        </div>
       </section>
     </main>
   );

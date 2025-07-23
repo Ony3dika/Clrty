@@ -1,7 +1,7 @@
 import "./globals.css";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist} from "next/font/google";
 import { ThemeProvider } from "../components/ui/theme-provider";
-
+import { Toaster } from "sonner";
 export const metadata = {
   title: "Clrty",
   description: "Workflows that work.",
@@ -13,7 +13,7 @@ const fontSans = Geist({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning={true}>
       <head>
         <link
           href='https://api.fontshare.com/v2/css?f[]=manrope@400,500,600&display=swap'
@@ -33,6 +33,13 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
+          <Toaster
+            richColors
+            theme='system'
+          
+            closeButton
+            position='top-right'
+          />
           {children}
         </ThemeProvider>
       </body>
