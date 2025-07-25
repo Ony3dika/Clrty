@@ -4,7 +4,7 @@ import { EyeIcon, EyeOffIcon, LoaderCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import logo from "../../public/clrty.png";
+import logo from "../../public/logo.png";
 import google from "../../public/google.svg";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ export default function Home() {
   });
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
   const router = useRouter();
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL_2;
 
   const signInUser = async (e) => {
     e.preventDefault();

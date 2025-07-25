@@ -44,7 +44,7 @@ const Tasks = () => {
     <Card className='flex flex-col h-full'>
       <CardHeader className='items-center pb-0'>
         <CardTitle className={"text-center"}>Project Progress</CardTitle>
-        <CardDescription className={"text-center"}>This Week</CardDescription>
+        <CardDescription className={"text-center"}>Completion Rate</CardDescription>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
         <ChartContainer
@@ -105,7 +105,7 @@ const Tasks = () => {
           <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Tracking team progress this week
+          Tracking team progress
         </div>
       </CardFooter>
     </Card>

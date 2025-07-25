@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Geist} from "next/font/google";
 import { ThemeProvider } from "../components/ui/theme-provider";
+import {TanstackProvider} from "../components/providers/tanstack-provider"
 import { Toaster } from "sonner";
 export const metadata = {
   title: "Clrty",
@@ -33,14 +34,15 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster
-            richColors
-            theme='system'
-          
-            closeButton
-            position='top-right'
-          />
-          {children}
+          <TanstackProvider>
+            <Toaster
+              richColors
+              theme='system'
+              closeButton
+              position='top-right'
+            />
+            {children}
+          </TanstackProvider>
         </ThemeProvider>
       </body>
     </html>

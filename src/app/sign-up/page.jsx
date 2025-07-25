@@ -8,7 +8,7 @@ import {
   XIcon,
 } from "lucide-react";
 import Image from "next/image";
-import logo from "../../../public/clrty.png";
+import logo from "../../../public/logo.png";
 import google from "../../../public/google.svg";
 import { Separator } from "../../components/ui/separator";
 import { Button } from "../../components/ui/button";

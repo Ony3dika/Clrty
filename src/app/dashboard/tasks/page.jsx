@@ -29,7 +29,7 @@ import {
   User2Icon,
   Ellipsis,
   File,
-  XIcon,
+  
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -323,7 +323,7 @@ const TaskPage = () => {
               {" "}
               <div className='flex items-center'>
                 <BriefcaseBusiness className='text-blue-500 size-5' />
-                <p className='text-sm ml-2'>Working</p>
+                <p className='text-sm ml-2'>Backlog</p>
               </div>
               <button className='cursor-pointer'>
                 <File size={20} />

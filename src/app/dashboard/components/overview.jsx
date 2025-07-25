@@ -1,4 +1,6 @@
 "use client";
+import { useState, useEffect } from "react";
+
 import React from "react";
 import {
   Card,
@@ -7,26 +9,78 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card";
+import { CalendarClock } from "lucide-react";
+import { Button } from "../../../components/ui/button";
+import { cn } from "../../../lib/utils";
+import Link from "next/link";
 const Overview = () => {
+  const [tasks, setTasks] = useState([]);
+  // Fetch Tasks
+  useEffect(() => {
+    const storedTasks = localStorage.getItem("tasks");
+    if (storedTasks) {
+      try {
+        const parsedTasks = JSON.parse(storedTasks);
+        const uncompletedTasks = parsedTasks.filter(
+          (task) => task.status === "in-progress"
+        );
+        setTasks(uncompletedTasks);
+        console.log(uncompletedTasks);
+      } catch (error) {
+        console.error("Failed to parse tasks:", error);
+      }
+    }
+  }, []);
   return (
     <Card className={"h-full"}>
       <CardHeader>
-        <CardTitle>
-          Project: <span className='text-primary'>Zephyr Redevelopment</span>
-        </CardTitle>
+        <CardTitle>Tasks</CardTitle>
         <CardDescription>
-          Redesing and develop the Zphyr application, enhancing the user
-          experience and functionality.
           <div className='text-muted-foreground flex items-center'>
-            <p>Status: In Progress</p>
+            <p> On-Going Tasks</p>
             <div className='h-2 w-2 ml-2 rounded-full bg-yellow-400 animate-pulse'></div>
           </div>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Upcoming Deadline: Jul 20 - Launch Homepage</p>
-
-       
+        <div className='flex flex-col gap-y-3'>
+          {tasks.length > 0 &&
+            tasks.slice(0, 6).map((task, index) => (
+              <div key={index} className='border bg-secondary p-2 rounded-md'>
+                <div className='flex justify-between items-center'>
+                  <h2 className='font-semibold text-base'>{task.title}</h2>
+                </div>
+                <p className='text-sm my-3 text-muted-foreground'>
+                  {task.description}
+                </p>
+                <div className='flex justify-between items-center'>
+                  <div className='flex items-center text-muted-foreground text-sm'>
+                    <CalendarClock size={20} className='mr-1' />{" "}
+                    {task.dueDate
+                      ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })
+                      : "No due date"}
+                  </div>{" "}
+                  <div
+                    className={cn("text-xs border px-2 py-0.5 rounded", {
+                      "bg-red-500/60 border-red-500": task.priority === "high",
+                      "bg-yellow-500/60 border-yellow-500":
+                        task.priority === "medium",
+                      "bg-green-500/60 border-green-500":
+                        task.priority === "low",
+                    })}
+                  >
+                    {task.priority}
+                  </div>
+                </div>
+              </div>
+            ))}
+          <Button asChild variant={"outline"} className='mt-auto w-full'>
+            <Link href={"/dashboard/tasks"}>View All</Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
