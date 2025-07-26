@@ -10,6 +10,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Input } from "../components/ui/input";
 import { Separator } from "../components/ui/separator";
+import {useStore} from "../app/store"
 
 export default function Home() {
   const id = useId();
@@ -20,6 +21,7 @@ export default function Home() {
     email: "",
   });
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
+  const updateUser = useStore((state) => state.updateUser);
   const router = useRouter();
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL_2;
 
@@ -38,6 +40,13 @@ export default function Home() {
       const data = await response.json();
       if (data.success == true) {
         toast.success(data.message);
+        const token = data.data.token;
+        sessionStorage.setItem("clrtyToken", token);
+        updateUser({
+          first_name:data.data.userData.first_name,
+          last_name:data.data.userData.last_name,
+          email: data.data.userData.email,
+        });
         console.log(data);
         router.push("/dashboard");
 

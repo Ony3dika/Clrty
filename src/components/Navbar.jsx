@@ -1,15 +1,22 @@
+"use client";
 import React from "react";
 import { SidebarTrigger } from "./ui/sidebar";
 import logo from "../../public/clrty.png";
 import ThemeToggle from "./theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useStore } from "../app/store";
 const Navbar = () => {
+  const user = useStore((state) => state.user);
   return (
     <nav className='p-4 flex items-center justify-between'>
       <div className='flex items-center'>
         <SidebarTrigger />
 
-        <h2 className='ml:4 md:block hidden text-base font-semibold'>User</h2>
+        {user.first_name ? (
+          <h2 className='ml:4 md:block hidden text-base font-semibold'>Welcome, {user.first_name}</h2>
+        ) : (
+          <h2 className='ml:4 md:block hidden text-base font-semibold'>Welcome, User</h2>
+        )}
       </div>
 
       <div className='flex justify-between basis-4/5 md:basis-1/4 items-center'>

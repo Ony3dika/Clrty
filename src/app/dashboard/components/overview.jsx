@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import {
   Card,
@@ -13,24 +13,24 @@ import { CalendarClock } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { cn } from "../../../lib/utils";
 import Link from "next/link";
+import { Skeleton } from "../../../components/ui/skeleton";
 const Overview = () => {
-  const [tasks, setTasks] = useState([]);
-  // Fetch Tasks
-  useEffect(() => {
-    const storedTasks = localStorage.getItem("tasks");
-    if (storedTasks) {
-      try {
-        const parsedTasks = JSON.parse(storedTasks);
-        const uncompletedTasks = parsedTasks.filter(
-          (task) => task.status === "in-progress"
-        );
-        setTasks(uncompletedTasks);
-        console.log(uncompletedTasks);
-      } catch (error) {
-        console.error("Failed to parse tasks:", error);
-      }
-    }
-  }, []);
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL_2;
+  const fetchTasks = async () => {
+    const token = sessionStorage.getItem("clrtyToken");
+    const response = await fetch(`${baseURL}/tasks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return await response.json();
+  };
+
+  const { data, isPending } = useQuery({
+    queryKey: ["fetchTasks"],
+    queryFn: fetchTasks,
+  });
+
   return (
     <Card className={"h-full"}>
       <CardHeader>
@@ -44,8 +44,17 @@ const Overview = () => {
       </CardHeader>
       <CardContent>
         <div className='flex flex-col gap-y-3'>
-          {tasks.length > 0 &&
-            tasks.slice(0, 6).map((task, index) => (
+          {isPending &&
+            [1, 2, 3, 4, 5].map((index) => (
+              <div key={index} className='border bg-secondary p-2 rounded-md'>
+                <Skeleton className={"h-4"} />
+
+                <Skeleton className={"h-8 my-3 "} />
+                <Skeleton className={"h-4"} />
+              </div>
+            ))}
+          {data &&
+            data.data.slice(0, 6).map((task, index) => (
               <div key={index} className='border bg-secondary p-2 rounded-md'>
                 <div className='flex justify-between items-center'>
                   <h2 className='font-semibold text-base'>{task.title}</h2>

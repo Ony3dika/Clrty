@@ -30,9 +30,8 @@ import Image from "next/image";
 const items = [
   { title: "Home", icon: LayoutDashboard, url: "/dashboard" },
   { title: "Tasks", icon: ListTodo, url: "/dashboard/tasks" },
-  { title: "Calendar", icon: CalendarDays, url: "/dashboard/calendar" },
-  { title: "Team", icon: Users2Icon, url: "/dashboard/team" },
   { title: "Finance", icon: Wallet, url: "/dashboard/finance" },
+  { title: "Calendar", icon: CalendarDays, url: "/dashboard/calendar" },
   {
     title: "Analytics",
     icon: ChartNoAxesColumnIncreasing,

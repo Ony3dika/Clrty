@@ -7,6 +7,7 @@ import Calendar from "./components/calendar";
 import { motion } from "framer-motion";
 
 const DashboardPage = () => {
+
   return (
     <motion.div
       initial={{ opacity: 0 }}

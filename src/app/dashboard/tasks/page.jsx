@@ -29,7 +29,6 @@ import {
   User2Icon,
   Ellipsis,
   File,
-  
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -54,11 +53,29 @@ import { Input } from "../../../components/ui/input";
 import { Textarea } from "../../../components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
 import { ScrollArea } from "../../../components/ui/scroll-area";
+import { useQuery } from "@tanstack/react-query";
 import { cn } from "../../../lib/utils";
 
 const TaskPage = () => {
   const [open, setOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
+
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL_2;
+
+  const fetchTasks = async () => {
+    const token = sessionStorage.getItem("clrtyToken");
+    const response = await fetch(`${baseURL}/tasks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return await response.json();
+  };
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["fetchTasks"],
+    queryFn: fetchTasks,
+  });
+
   const uncompletedTasks = tasks.filter(
     (task) => task.status === "in-progress"
   );
@@ -330,7 +347,7 @@ const TaskPage = () => {
               </button>
             </div>
             <ScrollArea className='h-fit lg:h-[60vh] p-2 flex flex-col'>
-              {tasks
+              {data && data.data
                 .filter((task) => !task.status)
                 .map((task) => (
                   <Card
