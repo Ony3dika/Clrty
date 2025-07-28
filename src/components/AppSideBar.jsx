@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Sidebar,
@@ -21,24 +22,25 @@ import {
   Settings,
   LogOut,
   ChartNoAxesColumnIncreasing,
-  Users2Icon,
   CalendarDays,
 } from "lucide-react";
+import { useStore } from "../app/store";
+import { useRouter } from "next/navigation";
 
 import Image from "next/image";
+import { toast } from "sonner";
 
 const items = [
   { title: "Home", icon: LayoutDashboard, url: "/dashboard" },
   { title: "Tasks", icon: ListTodo, url: "/dashboard/tasks" },
   { title: "Finance", icon: Wallet, url: "/dashboard/finance" },
   { title: "Calendar", icon: CalendarDays, url: "/dashboard/calendar" },
-  {
-    title: "Analytics",
-    icon: ChartNoAxesColumnIncreasing,
-    url: "/dashboard/analytics",
-  },
+ 
 ];
 const AppSideBar = () => {
+  const router = useRouter();
+
+  const updateUser = useStore((state) => state.updateUser);
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader className={"py-8"}>
@@ -107,7 +109,22 @@ const AppSideBar = () => {
               }
               asChild
             >
-              <button className='text-destructive'>
+              <button
+                onClick={() => {
+                  updateUser({
+                    email: null,
+                    first_name: null,
+                    last_name: null,
+                    avatar: null,
+                  });
+
+                  toast.success("Logged out successfully.");
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 2000);
+                }}
+                className='text-destructive'
+              >
                 <LogOut />
                 <span>LogOut</span>
               </button>

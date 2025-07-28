@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import {
@@ -14,22 +13,9 @@ import { Button } from "../../../components/ui/button";
 import { cn } from "../../../lib/utils";
 import Link from "next/link";
 import { Skeleton } from "../../../components/ui/skeleton";
+import { fetchTaskOptions } from "../../../lib/taskQueryFunctions.jsx";
 const Overview = () => {
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL_2;
-  const fetchTasks = async () => {
-    const token = sessionStorage.getItem("clrtyToken");
-    const response = await fetch(`${baseURL}/tasks`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return await response.json();
-  };
-
-  const { data, isPending } = useQuery({
-    queryKey: ["fetchTasks"],
-    queryFn: fetchTasks,
-  });
+  const { data, isPending } = useQuery(fetchTaskOptions());
 
   return (
     <Card className={"h-full"}>
@@ -54,38 +40,42 @@ const Overview = () => {
               </div>
             ))}
           {data &&
-            data.data.slice(0, 6).map((task, index) => (
-              <div key={index} className='border bg-secondary p-2 rounded-md'>
-                <div className='flex justify-between items-center'>
-                  <h2 className='font-semibold text-base'>{task.title}</h2>
-                </div>
-                <p className='text-sm my-3 text-muted-foreground'>
-                  {task.description}
-                </p>
-                <div className='flex justify-between items-center'>
-                  <div className='flex items-center text-muted-foreground text-sm'>
-                    <CalendarClock size={20} className='mr-1' />{" "}
-                    {task.dueDate
-                      ? new Date(task.dueDate).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })
-                      : "No due date"}
-                  </div>{" "}
-                  <div
-                    className={cn("text-xs border px-2 py-0.5 rounded", {
-                      "bg-red-500/60 border-red-500": task.priority === "high",
-                      "bg-yellow-500/60 border-yellow-500":
-                        task.priority === "medium",
-                      "bg-green-500/60 border-green-500":
-                        task.priority === "low",
-                    })}
-                  >
-                    {task.priority}
+            data.data
+              .filter((task) => task.status === "in-progress")
+              .slice(0, 5)
+              .map((task, index) => (
+                <div key={index} className='border bg-secondary p-2 rounded-md'>
+                  <div className='flex justify-between items-center'>
+                    <h2 className='font-semibold text-base'>{task.title}</h2>
+                  </div>
+                  <p className='text-sm my-3 text-muted-foreground'>
+                    {task.description}
+                  </p>
+                  <div className='flex justify-between items-center'>
+                    <div className='flex items-center text-muted-foreground text-sm'>
+                      <CalendarClock size={20} className='mr-1' />{" "}
+                      {task.dueDate
+                        ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : "No due date"}
+                    </div>{" "}
+                    <div
+                      className={cn("text-xs border px-2 py-0.5 rounded", {
+                        "bg-red-500/60 border-red-500":
+                          task.priority === "high",
+                        "bg-yellow-500/60 border-yellow-500":
+                          task.priority === "medium",
+                        "bg-green-500/60 border-green-500":
+                          task.priority === "low",
+                      })}
+                    >
+                      {task.priority}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           <Button asChild variant={"outline"} className='mt-auto w-full'>
             <Link href={"/dashboard/tasks"}>View All</Link>
           </Button>

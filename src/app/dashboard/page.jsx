@@ -7,7 +7,7 @@ import Calendar from "./components/calendar";
 import { motion } from "framer-motion";
 
 const DashboardPage = () => {
-
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -29,7 +29,7 @@ const DashboardPage = () => {
         </div>
 
         <div className='bg-card rounded-xl xl:col-span-2 2xl:col-span-2'>
-          <Calendar/>
+          <Calendar />
         </div>
         {/* Expenses */}
       </main>

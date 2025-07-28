@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "../../../components/ui/button";
 import {
   Card,
@@ -29,6 +29,8 @@ import {
   User2Icon,
   Ellipsis,
   File,
+  Loader2,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -55,33 +57,36 @@ import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "../../../lib/utils";
+import { Skeleton } from "../../../components/ui/skeleton";
+import {
+  fetchTaskOptions,
+  addTaskOptions,
+  updateStatusOptions,
+  deleteTaskOptions,
+} from "../../../lib/taskQueryFunctions.jsx";
 
 const TaskPage = () => {
   const [open, setOpen] = useState(false);
-  const [tasks, setTasks] = useState([]);
 
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL_2;
+  const { data: tasks, isPending, error } = useQuery(fetchTaskOptions());
+  const { mutate: addTask, isPending: isMutating } = addTaskOptions();
 
-  const fetchTasks = async () => {
-    const token = sessionStorage.getItem("clrtyToken");
-    const response = await fetch(`${baseURL}/tasks`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return await response.json();
-  };
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["fetchTasks"],
-    queryFn: fetchTasks,
-  });
+  const { mutate: updateStatus } = updateStatusOptions();
 
-  const uncompletedTasks = tasks.filter(
+  const { mutate: deleteTask } = deleteTaskOptions();
+  // Error handling
+  if (error) {
+    toast.error("Failed to fetch tasks");
+  }
+
+  const pendingTasks = tasks?.data.filter((task) => task.status === "pending");
+  const uncompletedTasks = tasks?.data.filter(
     (task) => task.status === "in-progress"
   );
-  const completedTasks = tasks.filter((task) => task.status === "completed");
+  const completedTasks = tasks?.data.filter(
+    (task) => task.status === "completed"
+  );
   const [formData, setFormData] = useState({
-    id: "",
     title: "",
     description: "",
     assignee: "",
@@ -90,38 +95,13 @@ const TaskPage = () => {
   });
   const [date, setDate] = useState("");
 
-  // Fetch Tasks
-  useEffect(() => {
-    const storedTasks = localStorage.getItem("tasks");
-    if (storedTasks) {
-      try {
-        const parsedTasks = JSON.parse(storedTasks);
-        setTasks(parsedTasks);
-        console.log(parsedTasks);
-      } catch (error) {
-        console.error("Failed to parse tasks:", error);
-      }
-    }
-  }, []);
-
   // Save Tasks
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newTask = {
-      ...formData,
-      id: crypto.randomUUID(),
-    };
-    setTasks((prevTasks) => {
-      const updatedTasks = [...prevTasks, newTask];
 
-      // Save to localStorage
-      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-
-      return updatedTasks;
-    });
+    addTask(formData);
     // Optional: Reset form
     setFormData({
-      id: "",
       title: "",
       description: "",
       assignee: "",
@@ -139,48 +119,14 @@ const TaskPage = () => {
   };
 
   //Update Task
-  const updateTaskStatus = (id, newStatus) => {
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id === id) {
-          const updatedTask = { ...task };
+  const updateTaskStatus = async (taskId, status) => {
+    updateStatus({ taskId, status });
+    toast.info(`Task status updated to ${status}`);
+  };
 
-          if (newStatus === "not-started") {
-            delete updatedTask.status;
-          } else {
-            updatedTask.status = newStatus;
-          }
-
-          return updatedTask;
-        }
-        return task;
-      })
-    );
-
-    // Also update localStorage
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === id) {
-        const updatedTask = { ...task };
-
-        if (newStatus === "not-started") {
-          delete updatedTask.status;
-        } else {
-          updatedTask.status = newStatus;
-        }
-
-        return updatedTask;
-      }
-      return task;
-    });
-
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    toast.info("Status changed.", {
-      description: "Task status has been changed",
-      action: {
-        icon: "Close",
-        onClick: () => toast.dismiss(),
-      },
-    });
+  const handleDelete = async (taskId) => {
+    deleteTask(taskId);
+    toast.info("Task deleted successfully.");
   };
   return (
     <motion.div
@@ -207,6 +153,7 @@ const TaskPage = () => {
           <DialogContent className='sm:max-w-[425px]'>
             <DialogHeader>
               <DialogTitle>Add Task</DialogTitle>
+
               <DialogDescription>Add a new task to the list</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
@@ -325,7 +272,15 @@ const TaskPage = () => {
                 <DialogClose asChild>
                   <Button variant='outline'>Cancel</Button>
                 </DialogClose>
-                <Button type='submit'>Add</Button>
+                <Button disabled={isMutating} type='submit'>
+                  {isMutating ? (
+                    <Loader2
+                      className={cn("", { "animate-spin": isMutating == true })}
+                    />
+                  ) : (
+                    "Add Task"
+                  )}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -347,88 +302,109 @@ const TaskPage = () => {
               </button>
             </div>
             <ScrollArea className='h-fit lg:h-[60vh] p-2 flex flex-col'>
-              {data && data.data
-                .filter((task) => !task.status)
-                .map((task) => (
+              {isPending &&
+                [1, 2, 3].map((index) => (
                   <Card
-                    key={task.id}
                     className={"p-3 shadow-none rounded-xl gap-3 my-2"}
+                    key={index}
                   >
-                    <CardHeader className={"p-0"}>
-                      <CardTitle
-                        className={
-                          "text-sm flex items-center font-normal justify-between"
-                        }
-                      >
-                        {task.title}
+                    <Skeleton className={"p-0 h-4"} />
 
-                        {/* DropDown to Move to Progress Column */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant='ghost'>
-                              <Ellipsis />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className='w-40'>
-                            <DropdownMenuLabel>Status</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuRadioGroup
-                              value={task.status}
-                              onValueChange={(value) =>
-                                updateTaskStatus(task.id, value)
-                              }
-                            >
-                              <DropdownMenuRadioItem
-                                value='in-progress'
-                                className={"px"}
-                              >
-                                In Progress
-                              </DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem value='completed'>
-                                Completed
-                              </DropdownMenuRadioItem>
-                            </DropdownMenuRadioGroup>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </CardTitle>
-                      <CardDescription className={"flex items-center mt-2"}>
-                        <User2Icon size={20} className='mr-1' />
-
-                        <p>{task.assignee}</p>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className={"p-0"}>
-                      <CardDescription>{task.description}</CardDescription>
-                    </CardContent>
-                    <CardFooter
-                      className={
-                        "p-0 mt-2 flex justify-between items-center text-sm"
-                      }
-                    >
-                      <div className='flex items-center text-muted-foreground'>
-                        <CalendarClock size={20} className='mr-1' />{" "}
-                        {task.dueDate
-                          ? new Date(task.dueDate).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                            })
-                          : "No due date"}
-                      </div>
-                      <div
-                        className={cn("text-sm border px-2 py-0.5 rounded", {
-                          "bg-red-500/60 border-red-500":
-                            task.priority === "high",
-                          "bg-yellow-500/60 border-yellow-500":
-                            task.priority === "medium",
-                          "bg-green-500/60 border-green-500":
-                            task.priority === "low",
-                        })}
-                      >
-                        {task.priority}
-                      </div>
-                    </CardFooter>
+                    <Skeleton className={"p-0 h-8 my-3"} />
+                    <Skeleton className={"p-0 h-4"} />
                   </Card>
                 ))}
+
+              {pendingTasks?.map((task) => (
+                <Card
+                  key={task._id}
+                  className={"p-3 shadow-none rounded-xl gap-3 my-2"}
+                >
+                  <CardHeader className={"p-0"}>
+                    <CardTitle
+                      className={
+                        "text-sm flex items-center font-normal justify-between"
+                      }
+                    >
+                      {task.title}
+
+                      {/* DropDown to Move to Progress Column */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant='ghost'>
+                            <Ellipsis />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className='w-40'>
+                          <DropdownMenuLabel>Status</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuRadioGroup
+                            value={task.status}
+                            onValueChange={(value) =>
+                              updateTaskStatus(task._id, value)
+                            }
+                          >
+                            <DropdownMenuRadioItem
+                              value='in-progress'
+                              className={"px"}
+                            >
+                              In Progress
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value='completed'>
+                              Completed
+                            </DropdownMenuRadioItem>
+                            <Button
+                              variant={"ghost"}
+                              className={
+                                "focus:text-accent-foreground text-red-500 relative flex justify-start cursor-default items-center rounded-sm py-1.5 text-sm outline-hidden w-full"
+                              }
+                              onClick={() => handleDelete(task._id)}
+                            >
+                              <Trash2 className='mr-1' />
+                              Delete
+                            </Button>
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </CardTitle>
+                    <CardDescription className={"flex items-center mt-2"}>
+                      <User2Icon size={20} className='mr-1' />
+
+                      <p>{task.assignee}</p>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className={"p-0"}>
+                    <CardDescription>{task.description}</CardDescription>
+                  </CardContent>
+                  <CardFooter
+                    className={
+                      "p-0 mt-2 flex justify-between items-center text-sm"
+                    }
+                  >
+                    <div className='flex items-center text-muted-foreground'>
+                      <CalendarClock size={20} className='mr-1' />{" "}
+                      {task.dueDate
+                        ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : "No due date"}
+                    </div>
+                    <div
+                      className={cn("text-sm border px-2 py-0.5 rounded", {
+                        "bg-red-500/60 border-red-500":
+                          task.priority === "high",
+                        "bg-yellow-500/60 border-yellow-500":
+                          task.priority === "medium",
+                        "bg-green-500/60 border-green-500":
+                          task.priority === "low",
+                      })}
+                    >
+                      {task.priority}
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
             </ScrollArea>
           </div>
 
@@ -446,9 +422,22 @@ const TaskPage = () => {
             </div>
 
             <ScrollArea className='h-fit lg:h-[60vh] p-2 flex flex-col'>
-              {uncompletedTasks.map((task) => (
+              {isPending &&
+                [1, 2, 3].map((index) => (
+                  <Card
+                    className={"p-3 shadow-none rounded-xl gap-3 my-2"}
+                    key={index}
+                  >
+                    <Skeleton className={"p-0 h-4"} />
+
+                    <Skeleton className={"p-0 h-8 my-3"} />
+                    <Skeleton className={"p-0 h-4"} />
+                  </Card>
+                ))}
+
+              {uncompletedTasks?.map((task) => (
                 <Card
-                  key={task.id}
+                  key={task._id}
                   className={"p-3 shadow-none rounded-xl gap-3 my-2"}
                 >
                   <CardHeader className={"p-0"}>
@@ -471,11 +460,11 @@ const TaskPage = () => {
                           <DropdownMenuRadioGroup
                             value={task.status}
                             onValueChange={(value) =>
-                              updateTaskStatus(task.id, value)
+                              updateTaskStatus(task._id, value)
                             }
                           >
                             <DropdownMenuRadioItem
-                              value='not-started'
+                              value='pending'
                               className={"px"}
                             >
                               Not Started
@@ -483,6 +472,16 @@ const TaskPage = () => {
                             <DropdownMenuRadioItem value='completed'>
                               Completed
                             </DropdownMenuRadioItem>
+                            <Button
+                              variant={"ghost"}
+                              className={
+                                "focus:text-accent-foreground text-red-500 relative flex justify-start cursor-default items-center rounded-sm py-1.5 text-sm outline-hidden w-full"
+                              }
+                              onClick={() => handleDelete(task._id)}
+                            >
+                              <Trash2 className='mr-1' />
+                              Delete
+                            </Button>
                           </DropdownMenuRadioGroup>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -542,9 +541,22 @@ const TaskPage = () => {
             </div>
 
             <ScrollArea className='h-fit lg:h-[60vh] p-2 flex flex-col'>
-              {completedTasks.map((task) => (
+              {isPending &&
+                [1, 2, 3].map((index) => (
+                  <Card
+                    className={"p-3 shadow-none rounded-xl gap-3 my-2"}
+                    key={index}
+                  >
+                    <Skeleton className={"p-0 h-4"} />
+
+                    <Skeleton className={"p-0 h-8 my-3"} />
+                    <Skeleton className={"p-0 h-4"} />
+                  </Card>
+                ))}
+
+              {completedTasks?.map((task) => (
                 <Card
-                  key={task.id}
+                  key={task._id}
                   className={"p-3 shadow-none rounded-xl gap-3 my-2"}
                 >
                   <CardHeader className={"p-0"}>
@@ -567,11 +579,11 @@ const TaskPage = () => {
                           <DropdownMenuRadioGroup
                             value={task.status}
                             onValueChange={(value) =>
-                              updateTaskStatus(task.id, value)
+                              updateTaskStatus(task._id, value)
                             }
                           >
                             <DropdownMenuRadioItem
-                              value='not-started'
+                              value='pending'
                               className={"px"}
                             >
                               Not Started
@@ -582,6 +594,16 @@ const TaskPage = () => {
                             >
                               In Progress
                             </DropdownMenuRadioItem>
+                            <Button
+                              variant={"ghost"}
+                              className={
+                                "focus:text-accent-foreground text-red-500 relative flex justify-start cursor-default items-center rounded-sm py-1.5 text-sm outline-hidden w-full"
+                              }
+                              onClick={() => handleDelete(task._id)}
+                            >
+                              <Trash2 className='mr-1' />
+                              Delete
+                            </Button>
                           </DropdownMenuRadioGroup>
                         </DropdownMenuContent>
                       </DropdownMenu>

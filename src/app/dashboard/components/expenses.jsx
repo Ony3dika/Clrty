@@ -1,68 +1,79 @@
 "use client";
 import React from "react";
 import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid,  XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  
 } from "../../../components/ui/card";
 import {
-  
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "../../../components/ui/chart";
-
+import { fetchFinanceOptions } from "../../../lib/financeQueryFunctions";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "../../../components/ui/skeleton";
 export const description = "An interactive bar chart";
-const chartData = [
-  { date: "2025-07-01", expense: 222 },
-  { date: "2025-07-02", expense: 150 },
-  { date: "2025-07-03", expense: 300 },
-  { date: "2025-07-04", expense: 100 },
-  { date: "2025-07-05", expense: 250 },
-  { date: "2025-07-06", expense: 200 },
-  { date: "2025-07-07", expense: 120 },
-  { date: "2025-07-08", expense: 380 },
-  { date: "2025-07-09", expense: 150 },
-  { date: "2025-07-10", expense: 280 },
-  { date: "2025-07-11", expense: 220 },
-  { date: "2025-07-12", expense: 300 },
-  { date: "2025-07-13", expense: 250 },
-  { date: "2025-07-14", expense: 200 },
-  { date: "2025-07-15", expense: 150 },
-  { date: "2025-07-16", expense: 100 },
-  { date: "2025-07-17", expense: 180 },
-  { date: "2025-07-18", expense: 220 },
-  { date: "2025-07-19", expense: 250 },
-  { date: "2025-07-20", expense: 300 },
-  { date: "2025-07-21", expense: 280 },
-  { date: "2025-07-22", expense: 200 },
-  { date: "2025-07-23", expense: 150 },
-  { date: "2025-07-24", expense: 180 },
 
-  { date: "2025-07-31", expense: 100 },
-];
-
-const budget = 8420;
-const totalExpense = chartData.reduce((acc, curr) => acc + curr.expense, 0);
-
-const percentageSpent = ((totalExpense / budget) * 100).toFixed(1);
-
-const chartConfig = {
-  views: {
-    label: "Daily Expenditure",
-  },
-  expense: {
-    label: "Daily Expenditure",
-    color: "var(--chart-2)",
-  },
-};
 const Expenses = () => {
+  const {
+    data: financeData,
+    isPending,
+    error,
+  } = useQuery(fetchFinanceOptions());
+  const chartConfig = {
+    views: {
+      label: "Daily Expenditure",
+    },
+    expense: {
+      label: "Daily Expenditure",
+      color: "var(--chart-2)",
+    },
+  };
+
+  const chartData =
+    financeData?.data[0]?.expenditures?.sort(
+      (a, b) => new Date(a.date) - new Date(b.date)
+    ) || [];
+  const budget = financeData?.data[0]?.budget || 0;
+  const totalExpense = chartData?.reduce((acc, curr) => acc + curr.amount, 0);
+
+  const percentageSpent = ((totalExpense / budget) * 100).toFixed(1) || 0;
+
+
+  if (error) return <div>Error loading finance data</div>;
+  if (isPending)
+    return (
+      <Card className={"h-full"}>
+        <CardHeader>
+          {" "}
+          <CardTitle>Expenses This Month</CardTitle>
+          <Skeleton className={"h-20 w-full"} />
+        </CardHeader>
+
+        <CardContent>
+          <Skeleton className={"h-40 w-full"} />
+        </CardContent>
+
+        <CardFooter>
+          <Skeleton className={"h-10 w-full"} />
+        </CardFooter>
+      </Card>
+    );
   return (
     <Card className={"h-full"}>
       <CardHeader>
@@ -92,7 +103,7 @@ const Expenses = () => {
                 }`}
               >
                 <TrendingUp size={15} className='mr-1' />
-                <span> {percentageSpent}</span>
+                <span> {percentageSpent == "NaN" ? 0 : percentageSpent}</span>
               </div>
             </div>
           </div>
@@ -101,7 +112,7 @@ const Expenses = () => {
       </CardHeader>
       <CardContent>
         <ChartContainer className={"max-h-[200px] w-full"} config={chartConfig}>
-          <BarChart
+          <AreaChart
             accessibilityLayer
             data={chartData}
             margin={{
@@ -110,7 +121,7 @@ const Expenses = () => {
           >
             <CartesianGrid vertical={false} />
             <YAxis
-              dataKey='expense'
+              dataKey='amount'
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -132,9 +143,29 @@ const Expenses = () => {
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey='expense' fill='var(--color-expense)' radius={8}></Bar>
-          </BarChart>
+            />{" "}
+            <defs>
+              <linearGradient id='fillExpense' x1='0' y1='0' x2='0' y2='1'>
+                <stop
+                  offset='5%'
+                  stopColor='var(--color-expense)'
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset='95%'
+                  stopColor='var(--color-expense)'
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+            <Area
+              type='natural'
+              dataKey='amount'
+              fill='url(#fillExpense)'
+              stroke='var(--color-expense)'
+              fillOpacity={0.4}
+            ></Area>
+          </AreaChart>
         </ChartContainer>
       </CardContent>
       {/* <CardFooter className='flex-col items-start gap-2 text-sm'>
