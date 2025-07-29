@@ -25,7 +25,6 @@ export default function Home() {
   const router = useRouter();
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-  
   const signInUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -64,6 +63,7 @@ export default function Home() {
     }
   };
 
+ 
   return (
     <main className='lg:flex gap-x-4 justify-between items-center h-screen p-4'>
       {/* Form Section */}
@@ -158,10 +158,7 @@ export default function Home() {
 
       {/* Image */}
       <section className='basis-1/2 lg:block hidden h-full rounded-3xl bg-pattern'>
-        {" "}
-        <Button variant={"outline"} asChild className='m-4 rounded-full'>
-          <Link href={"/dashboard"}>D</Link>
-        </Button>
+        
       </section>
     </main>
   );

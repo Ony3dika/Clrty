@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Expenses from "../components/expenses";
 import {
@@ -40,7 +40,16 @@ import { useQuery } from "@tanstack/react-query";
 import { cn } from "../../../lib/utils";
 import { toast } from "sonner";
 import { ScrollArea } from "../../../components/ui/scroll-area";
+import { Skeleton } from "../../../components/ui/skeleton";
+import { useStore } from "../../store";
+import BlurredPage from "../../../components/blurred-page";
+import Link from "next/link";
 const FinancePage = () => {
+  const user = useStore((state) => state.user);
+  if (!user.email) {
+    return <BlurredPage />;
+  }
+
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState("");
   const [financeForm, setFinanceForm] = useState({
@@ -50,7 +59,9 @@ const FinancePage = () => {
     date: new Date(),
   });
 
-  const { data: budgetInfo } = useQuery(fetchFinanceOptions());
+  const { data: budgetInfo, isPending: isBudgetPending } = useQuery(
+    fetchFinanceOptions()
+  );
 
   const budget = budgetInfo?.data[0]?.budget;
   const expenditures = budgetInfo?.data[0]?.expenditures || [];
@@ -235,6 +246,23 @@ const FinancePage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {isBudgetPending &&
+                  [1, 2, 3, 4, 5].map((index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Skeleton className={"h-4"} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className={"h-4"} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className={"h-4"} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className={"h-4"} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 {expenditures?.map((expense, index) => {
                   const date = new Date(expense.date);
                   const month = date.toLocaleString("default", {

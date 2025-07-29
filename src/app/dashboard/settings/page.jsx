@@ -6,7 +6,10 @@ import { Input } from "../../../components/ui/input";
 import { Separator } from "../../../components/ui/separator";
 import Uploader from "../../../components/avatar-upload";
 import { Button } from "../../../components/ui/button";
+import { useStore } from "../../store";
 const SettingsPage = () => {
+
+  const user = useStore((state) => state.user);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -36,13 +39,13 @@ const SettingsPage = () => {
           {/* First Name */}
           <div className='grid w-full max-w-sm items-center gap-3'>
             <Label htmlFor='fname'>FirstName</Label>
-            <Input type='text' id='fname' placeholder='FirstName' />
+            <Input value={user.first_name} type='text' id='fname' placeholder='FirstName' />
           </div>
 
           {/* Last Name */}
           <div className='grid w-full max-w-sm items-center gap-3'>
             <Label htmlFor='lname'>LastName</Label>
-            <Input type='text' id='lname' placeholder='LastName' />
+            <Input value={user.last_name} type='text' id='lname' placeholder='LastName' />
           </div>
 
           <Separator className={"col-span-2 xl:col-span-4 my-10"} />

@@ -64,8 +64,14 @@ import {
   updateStatusOptions,
   deleteTaskOptions,
 } from "../../../lib/taskQueryFunctions.jsx";
-
+import { useStore } from "../../store";
+import BlurredPage from "../../../components/blurred-page";
 const TaskPage = () => {
+  const user = useStore((state) => state.user);
+  if (!user.email) {
+    return <BlurredPage />;
+  }
+
   const [open, setOpen] = useState(false);
 
   const { data: tasks, isPending, error } = useQuery(fetchTaskOptions());

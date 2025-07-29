@@ -43,6 +43,7 @@ export default function Component() {
           onDrop={handleDrop}
           data-dragging={isDragging || undefined}
           aria-label={previewUrl ? "Change image" : "Upload image"}
+          disabled
         >
           {previewUrl ? (
             <img

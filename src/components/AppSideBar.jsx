@@ -21,8 +21,7 @@ import {
   Wallet,
   Settings,
   LogOut,
-  ChartNoAxesColumnIncreasing,
-  CalendarDays,
+  
 } from "lucide-react";
 import { useStore } from "../app/store";
 import { useRouter } from "next/navigation";
@@ -34,7 +33,7 @@ const items = [
   { title: "Home", icon: LayoutDashboard, url: "/dashboard" },
   { title: "Tasks", icon: ListTodo, url: "/dashboard/tasks" },
   { title: "Finance", icon: Wallet, url: "/dashboard/finance" },
-  { title: "Calendar", icon: CalendarDays, url: "/dashboard/calendar" },
+  
  
 ];
 const AppSideBar = () => {
@@ -121,12 +120,12 @@ const AppSideBar = () => {
                   toast.success("Logged out successfully.");
                   setTimeout(() => {
                     router.push("/");
-                  }, 2000);
+                  }, 1000);
                 }}
                 className='text-destructive'
               >
                 <LogOut />
-                <span>LogOut</span>
+                <span>Log Out</span>
               </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
