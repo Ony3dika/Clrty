@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { SidebarProvider } from "../../components/ui/sidebar";
-import AppSideBar from "../../components/appSideBar";
-import Navbar from "../../components/navbar";
+import AppSideBar from "../../components/appSideBar.jsx";
+import Navbar from "../../components/navbar.jsx";
 
 
 const Dashboardlayout = async ({ children }) => {
