@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React,{useState} from "react";
 import { motion } from "framer-motion";
 import { Label } from "../../../components/ui/label";
 import { Input } from "../../../components/ui/input";
@@ -7,9 +7,20 @@ import { Separator } from "../../../components/ui/separator";
 import Uploader from "../../../components/avatar-upload";
 import { Button } from "../../../components/ui/button";
 import { useStore } from "../../store";
+import BlurredPage from "../../../components/blurred-page";
 const SettingsPage = () => {
+  const [userData, setUserData] = useState({
+    first_name: "",
+    last_name: "",
+    function: "",
+    position: "",
+  });
 
   const user = useStore((state) => state.user);
+
+  if (!user.email) {
+    return <BlurredPage />;
+  }
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -39,13 +50,25 @@ const SettingsPage = () => {
           {/* First Name */}
           <div className='grid w-full max-w-sm items-center gap-3'>
             <Label htmlFor='fname'>FirstName</Label>
-            <Input value={user.first_name} type='text' id='fname' placeholder='FirstName' />
+            <Input
+              value={user.first_name}
+              onChange={(e)=> setUserData({ ...userData, first_name: e.target.value })}
+              type='text'
+              id='fname'
+              placeholder='FirstName'
+            />
           </div>
 
           {/* Last Name */}
           <div className='grid w-full max-w-sm items-center gap-3'>
             <Label htmlFor='lname'>LastName</Label>
-            <Input value={user.last_name} type='text' id='lname' placeholder='LastName' />
+            <Input
+              value={user.last_name}
+              onChange={(e)=> setUserData({ ...userData, last_name: e.target.value })}
+              type='text'
+              id='lname'
+              placeholder='LastName'
+            />
           </div>
 
           <Separator className={"col-span-2 xl:col-span-4 my-10"} />
@@ -71,7 +94,7 @@ const SettingsPage = () => {
           </div>
 
           <div className='xl:col-start-4 col-start-2 xl:col-end-4 col-end-2 flex justify-end'>
-            <Button type='submit'>Save</Button>
+            {/* <Button type='submit'>Save</Button> */}
           </div>
         </form>
       </main>

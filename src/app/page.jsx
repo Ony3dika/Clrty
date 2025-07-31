@@ -1,11 +1,12 @@
 "use client";
-import { useId, useState } from "react";
+import { use, useId, useState } from "react";
 import { EyeIcon, EyeOffIcon, LoaderCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "../../public/logo.png";
 import google from "../../public/google.svg";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Input } from "../components/ui/input";
@@ -24,7 +25,7 @@ export default function Home() {
   const updateUser = useStore((state) => state.updateUser);
   const router = useRouter();
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
-
+  const queryClient = useQueryClient();
   const signInUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -47,6 +48,9 @@ export default function Home() {
           last_name: data.data.userData.last_name,
           email: data.data.userData.email,
         });
+        queryClient.invalidateQueries({
+          queryKey: ["fetchFinances", "fetchTasks"],
+        });
         console.log(data);
         router.push("/dashboard");
 
@@ -63,7 +67,6 @@ export default function Home() {
     }
   };
 
- 
   return (
     <main className='lg:flex gap-x-4 justify-between items-center h-screen p-4'>
       {/* Form Section */}
@@ -93,12 +96,12 @@ export default function Home() {
           </p>
         </div>
 
-        <Button variant={"outline"}>
+        {/* <Button variant={"outline"}>
           <Image src={google} alt='google' />
           Sign In with Google
-        </Button>
+        </Button> */}
 
-        <Separator />
+        {/* <Separator /> */}
         {/* Form */}
         <form onSubmit={signInUser} action=''>
           <Input
@@ -157,9 +160,7 @@ export default function Home() {
       </section>
 
       {/* Image */}
-      <section className='basis-1/2 lg:block hidden h-full rounded-3xl bg-pattern'>
-        
-      </section>
+      <section className='basis-1/2 lg:block hidden h-full rounded-3xl bg-pattern'></section>
     </main>
   );
 }

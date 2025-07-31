@@ -5,6 +5,7 @@ import logo from "../../public/clrty.png";
 import ThemeToggle from "./theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useStore } from "../app/store";
+import { CircleUserRoundIcon } from "lucide-react";
 const Navbar = () => {
   const user = useStore((state) => state.user);
   return (
@@ -31,10 +32,10 @@ const Navbar = () => {
 
         <ThemeToggle />
 
-        <Avatar>
-          <AvatarImage src={logo} />
-          <AvatarFallback>User</AvatarFallback>
-        </Avatar>
+        
+          <CircleUserRoundIcon className="opacity-60"/>
+          
+        
       </div>
     </nav>
   );

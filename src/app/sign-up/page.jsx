@@ -108,10 +108,10 @@ const SignUp = () => {
 
         <h1 className='font-semibold text-3xl'>Create an account</h1>
 
-        <Button variant={"outline"}>
+        {/* <Button variant={"outline"}>
           <Image src={google} alt='google' />
           Sign Up with Google
-        </Button>
+        </Button> */}
 
         <Separator />
 

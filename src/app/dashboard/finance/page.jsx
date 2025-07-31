@@ -46,12 +46,10 @@ import BlurredPage from "../../../components/blurred-page";
 import Link from "next/link";
 const FinancePage = () => {
   const user = useStore((state) => state.user);
-  if (!user.email) {
-    return <BlurredPage />;
-  }
 
-  const [open, setOpen] = useState(false);
   const [date, setDate] = useState("");
+  const [open, setOpen] = useState(false);
+
   const [financeForm, setFinanceForm] = useState({
     amount: "",
     budget: "",
@@ -81,6 +79,9 @@ const FinancePage = () => {
       date: new Date(),
     });
   };
+  if (!user.email) {
+    return <BlurredPage />;
+  }
 
   return (
     <motion.div
@@ -119,7 +120,7 @@ const FinancePage = () => {
                     <Input
                       type={"number"}
                       disabled={budget}
-                      value={budget || ""}
+                      value={financeForm.budget}
                       required
                       placeholder='0.00'
                       className={"peer ps-6 pe-12"}
